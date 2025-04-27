@@ -18,31 +18,31 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: ['https://servio-try2.vercel.app', process.env.CLIENT_URL],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-}));
 // app.use(cors({
-//   origin: function(origin, callback) {
-//     const allowedOrigins = [
-//       process.env.CLIENT_URL,
-//       'https://servio-try2.vercel.app'
-//     ];
-    
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
+//   origin: ['https://servio-try2.vercel.app', process.env.CLIENT_URL],
 //   credentials: true,
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
 // }));
+app.use(cors({
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'https://servio-try2.vercel.app',process.env.CLIENT_URL,
+      
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
