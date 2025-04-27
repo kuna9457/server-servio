@@ -18,37 +18,92 @@ dotenv.config();
 const app = express();
 
 // Middleware
+app.use((req, res, next) => {
+  console.log('Incoming request:', {
+    method: req.method,
+    url: req.url,
+    origin: req.headers.origin,
+    headers: req.headers
+  });
+  next();
+});
+
 app.use(cors({
   origin: function(origin, callback) {
-    const allowedOrigins = [
+    // Log all CORS-related information
+    console.log('CORS check - Origin:', origin);
+    console.log('CORS check - Allowed origins:', [
       'https://servio-try2.vercel.app',
       process.env.CLIENT_URL
-    ].filter(Boolean); // Remove any undefined/null values
+    ]);
     
-    console.log('Request origin:', origin);
-    console.log('Allowed origins:', allowedOrigins);
-    
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('CORS: Allowing request with no origin');
+      return callback(null, true);
+    }
+
+    const allowedOrigins = [
+      'https://servio-try2.vercel.app',
+      process.env.CLIENT_URL,
+      'http://localhost:3000' // Add localhost for development
+    ].filter(Boolean);
+
+    if (allowedOrigins.includes(origin)) {
+      console.log('CORS: Allowing request from origin:', origin);
       callback(null, true);
     } else {
-      console.log('CORS blocked for origin:', origin);
+      console.log('CORS: Blocking request from origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
     'Content-Type',
     'Authorization',
     'X-Requested-With',
     'Accept',
-    'Origin'
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 600, // Cache preflight requests for 10 minutes
+  maxAge: 600,
   preflightContinue: false,
   optionsSuccessStatus: 204
 }));
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     const allowedOrigins = [
+//       'https://servio-try2.vercel.app',
+//       process.env.CLIENT_URL
+//     ].filter(Boolean); // Remove any undefined/null values
+    
+//     console.log('Request origin:', origin);
+//     console.log('Allowed origins:', allowedOrigins);
+    
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       console.log('CORS blocked for origin:', origin);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: [
+//     'Content-Type',
+//     'Authorization',
+//     'X-Requested-With',
+//     'Accept',
+//     'Origin'
+//   ],
+//   exposedHeaders: ['Content-Range', 'X-Content-Range'],
+//   maxAge: 600, // Cache preflight requests for 10 minutes
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
+// }));
 // app.use(cors({
 //   origin: function(origin, callback) {
 //     const allowedOrigins = [
