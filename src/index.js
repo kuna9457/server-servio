@@ -22,7 +22,7 @@ app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
       process.env.CLIENT_URL,
-      'http://localhost:3000'
+      'https://servio-try2.vercel.app'
     ];
     
     if (!origin || allowedOrigins.includes(origin)) {
